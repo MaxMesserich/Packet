@@ -101,6 +101,10 @@ public class AwesomePacket extends Packet {
 		return (AwesomePacket[])packets.toArray(new AwesomePacket[packets.size()]);
 	}
 	
+	public static int howMuchLeft(int packetSize, PacketKind kind, int arg) {
+		return packetSize - (kind.toString() + " " + arg + " ").getBytes().length;
+	}
+	
 	public static byte[] getData (byte[] file, int from, int length) {
 		if (file.length > from + length) {
 			return Arrays.copyOfRange(file, from, from + length);
