@@ -18,9 +18,10 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	private TransferMode transferMode;
 	FileInputStream inputStream;
 	FileOutputStream outputStream;
-
+	private boolean init;
 	public GoodTransferProtocol() {
 		System.out.println("DERP DERP");
+		init = true;
 	}
 
 	@Override
@@ -65,6 +66,12 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 		if (this.transferMode == TransferMode.Send) {
 			// Send mode
 //			System.out.println("TICK SEND");
+			if(!init){
+				if(ReceiveData()){
+					return true;
+				}
+			}
+			init = false;
 			return SendData();
 		} else {
 			// Receive mode
@@ -80,7 +87,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	 */
 	private boolean SendData() {
 		if (transferMode == TransferMode.Send) {
-
+			System.out.println("SENDING");
 			// Max packet size is 1024
 			byte[] readData = new byte[1024];
 			byte[] readData1 = new byte[1024];
@@ -116,6 +123,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			}
 			return false;
 		} else {
+			System.out.println("Sending ACK to Sender");
 			String ack = "ACK";
 			byte[] ackBytes = ack.getBytes();
 			networkLayer.Transmit(new Packet(ackBytes));
@@ -140,6 +148,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					message += (char) (packetBytes[i]);
 				}
 				if (message.equals("ACK")) {
+					
 					System.out.println("ACK RECEIVED FROM CLIENT");
 				}
 			} else {
