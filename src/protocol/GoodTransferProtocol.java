@@ -64,11 +64,11 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	public boolean Tick() {
 		if (this.transferMode == TransferMode.Send) {
 			// Send mode
-			System.out.println("TICK SEND");
+//			System.out.println("TICK SEND");
 			return SendData();
 		} else {
 			// Receive mode
-			System.out.println("TICK RECEIVE");
+//			System.out.println("TICK RECEIVE");
 			return ReceiveData();
 		}
 	}
@@ -130,7 +130,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	 */
 	private boolean ReceiveData() {
 		Packet receivedPacket = networkLayer.Receive();
-		System.out.println("RECEIVING DATA");
+//		
 		if (receivedPacket != null) {
 			if (transferMode == TransferMode.Send) {
 				// Create a new String to read the message;
@@ -143,6 +143,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					System.out.println("ACK RECEIVED FROM CLIENT");
 				}
 			} else {
+				System.out.println("RECIEVED DATA");
 				byte[] data = receivedPacket.GetData();
 
 				// If the data packet was empty, we are done
