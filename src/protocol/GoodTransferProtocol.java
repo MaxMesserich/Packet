@@ -64,9 +64,11 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	public boolean Tick() {
 		if (this.transferMode == TransferMode.Send) {
 			// Send mode
+			System.out.println("TICK SEND");
 			return SendData();
 		} else {
 			// Receive mode
+			System.out.println("TICK RECEIVE");
 			return ReceiveData();
 		}
 	}

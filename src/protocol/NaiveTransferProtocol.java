@@ -65,9 +65,11 @@ public class NaiveTransferProtocol implements IDataTransferProtocol {
 	@Override
 	public boolean Tick() {
 		if (this.transferMode == TransferMode.Send) {
+			System.out.println("TICK SEND");
 			// Send mode
 			return SendData();
 		} else {
+			System.out.println("TICK RECEIVE");
 			// Receive mode
 			return ReceiveData();
 		}
@@ -144,6 +146,7 @@ public class NaiveTransferProtocol implements IDataTransferProtocol {
 	private boolean ReceiveData() {
 		// Receive a data packet
 		Packet receivedPacket = networkLayer.Receive();
+		
 		if (receivedPacket != null) {
 			byte[] data = receivedPacket.GetData();
 
