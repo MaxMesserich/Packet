@@ -92,14 +92,16 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			System.out.println("SENDING");
 			ackReceived = false;
 			// Max packet size is 1024
-			byte[] w = new byte[1024];
+			byte[] w = new byte[100];
 			
 			int currentIndex = 0;
 
 			try {
 				int fileSize = inputStream.read(w);
 				if (fileSize > 0) {
-					AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0, new byte[1024]);
+					AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0,w);
+					Packet p = new Packet(w);
+					System.out.println(aws.getKind()+", "+aws.getArg());
 					if (networkLayer.Transmit(aws) == TransmissionResult.Failure) {
 						System.out.println("Failure to transmit");
 						// Mark current packet as not transmitted.

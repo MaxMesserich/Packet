@@ -32,6 +32,9 @@ public class AwesomePacket extends Packet {
 	 */
 	public AwesomePacket(PacketKind kind, int arg, byte[] data) {
 		super((kind.toString() + " " + arg + " " + byteArrayToString(data)).getBytes());
+		this.kind = kind;
+		this.arg = arg;
+		this.dataBytes = data;
 	}
 	
 	/**
@@ -73,8 +76,8 @@ public class AwesomePacket extends Packet {
 	private static String byteArrayToString(byte[] array) {
 		String string = "";
 		string += array[0];
-		for (byte b : array) {
-			string += " " + b;
+		for (int i = 1; i < array.length; i++) {
+			string += " " + array[i];
 		}
 		return string;
 	}
