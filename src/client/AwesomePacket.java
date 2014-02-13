@@ -83,7 +83,12 @@ public class AwesomePacket extends Packet {
 		}
 		return string;
 	}
-	
+	public static AwesomePacket[] file2packets(int packetSize,byte[] file){
+		int fileSize = file.length;
+		int packetCount = (fileSize/packetSize) +1;
+		AwesomePacket[] a;
+		return null;
+	}
 	/**
 	 * Returns the kind of the packet.
 	 */
