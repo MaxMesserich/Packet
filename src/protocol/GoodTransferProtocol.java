@@ -20,7 +20,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	FileOutputStream outputStream;
 
 	public GoodTransferProtocol() {
-
+		System.out.println("DERP DERP");
 	}
 
 	@Override
