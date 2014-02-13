@@ -67,6 +67,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			// Send mode
 //			System.out.println("TICK SEND");
 			if(init||ackReceived){
+				init = false;
 				return SendData();
 			}
 			ackReceived = ReceiveData();
@@ -107,10 +108,6 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 						System.out.println("Failure to transmit");
 						// Mark current packet as not transmitted.
 					} else {
-						networkLayer.Transmit(new Packet(readData));
-						networkLayer.Transmit(new Packet(readData));
-						networkLayer.Transmit(new Packet(readData));
-						networkLayer.Transmit(new Packet(readData));
 						currentIndex++;
 						if (currentIndex > data.length) {
 							return true;
