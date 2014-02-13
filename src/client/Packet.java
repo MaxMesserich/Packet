@@ -18,7 +18,7 @@ public class Packet {
 	 * @param data data contained in the packet
 	 */
 	public Packet(byte[] data){
-			this.data = data;
+		this.data = data;
 	}
 	
 	/**
@@ -28,4 +28,12 @@ public class Packet {
 	public byte[] GetData(){
 		return this.data;
 	}
+	
+	/**
+	 * Sets the data associated with this packet
+	 */
+	public void setData(byte[] data){
+		this.data = data;
+	}
+	
 }
