@@ -52,7 +52,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 						.toAbsolutePath() + "/tobesent.dat");
 				byte[] file = new byte[21222];
 
-				transmit = AwesomePacket.file2packets(500, file);
+				transmit = AwesomePacket.file2packets(1024, file);
 			} catch (FileNotFoundException e) {
 				throw new IllegalStateException("File not found");
 			}
@@ -77,16 +77,14 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			// System.out.println("TICK SEND");
 
 			if (init || ackReceived) {
-				System.out.println("Sending packet " + currentIndex);
 				init = false;
 				return SendData();
 			}
 			ackReceived = ReceiveData();
 			if (ackReceived) {
 				currentIndex++;
-
 			}
-			return false;
+			return ackReceived;
 
 		} else {
 			// Receive mode
@@ -105,12 +103,12 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			System.out.println("SENDING");
 			ackReceived = false;
 			// Max packet size is 1024
+			byte[] w = new byte[100];
 
 			if (currentIndex < transmit.length) {
-				// AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0, w);
-				// Packet p = new Packet(w);
-				System.out.println(transmit[currentIndex].getKind() + ", "
-						+ transmit[currentIndex].getArg());
+//				AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0, w);
+//				Packet p = new Packet(w);
+				System.out.println(transmit[currentIndex].getKind() + ", " +transmit[currentIndex].getArg());
 				if (networkLayer.Transmit(transmit[currentIndex]) == TransmissionResult.Failure) {
 					System.out.println("Failure to transmit");
 					return true;
@@ -121,7 +119,9 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 
 		} else {
 			System.out.println("Sending ACK to Sender");
-			networkLayer.Transmit(new AwesomePacket(PacketKind.ACK, 0, null));
+			String ack = "ACK";
+			byte[] ackBytes = ack.getBytes();
+			networkLayer.Transmit(new Packet(ackBytes));
 		}
 		return true;
 	}
@@ -133,19 +133,24 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	 */
 	private boolean ReceiveData() {
 		Packet receivedPacket = networkLayer.Receive();
+		//
 		if (receivedPacket != null) {
-			AwesomePacket packet = new AwesomePacket(receivedPacket.GetData());
-
 			if (transferMode == TransferMode.Send) {
 				// Create a new String to read the message;
-				if (packet.getKind().equals(PacketKind.ACK)) {
-					System.out.println("ACK from client");
-					this.ackReceived = true;
+				String message = "";
+				byte[] packetBytes = receivedPacket.GetData();
+				for (int i = 0; i < packetBytes.length; i++) {
+					message += (char) (packetBytes[i]);
+				}
+				if (message.equals("ACK")) {
+
+					System.out.println("ACK RECEIVED FROM CLIENT");
+					ackReceived = true;
 				}
 			} else {
 				System.out.println("RECIEVED DATA");
 				byte[] data = receivedPacket.GetData();
-
+				AwesomePacket packet = new AwesomePacket(data);
 				System.out.println(packet.getKind() + " : " + packet.getArg());
 				// If the data packet was empty, we are done
 				if (data.length == 0) {
@@ -155,14 +160,15 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
+					System.out.println("SENNDING ACK");
+					SendData();
 					// Signal that work is done
 					return true;
-
+				} else {
+					// Send ACK TO THE SERVER THAT A PACKET HAS BEEN RECEIVED
+					SendData();
 				}
-				SendData();
 			}
-
 		}
 		return false;
 	}
