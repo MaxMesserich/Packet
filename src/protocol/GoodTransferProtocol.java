@@ -1,16 +1,16 @@
 package protocol;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import protocol.IDataTransferProtocol.TransferMode;
+import client.AwesomePacket;
 import client.INetworkLayerAPI;
-import client.Packet;
 import client.INetworkLayerAPI.TransmissionResult;
+import client.Packet;
+import client.PacketKind;
 
 public class GoodTransferProtocol implements IDataTransferProtocol {
 	private INetworkLayerAPI networkLayer;
@@ -92,26 +92,22 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			System.out.println("SENDING");
 			ackReceived = false;
 			// Max packet size is 1024
-			byte[] readData = new byte[1024];
-			byte[] readData1 = new byte[1024];
-			byte[] readData2 = new byte[1024];
-
-			byte[][] data = { readData, readData1, readData2 };
+			byte[] w = new byte[1024];
+			
 			int currentIndex = 0;
 
 			try {
-				int fileSize = inputStream.read(data[currentIndex]);
+				int fileSize = inputStream.read(w);
 				if (fileSize > 0) {
-					System.out.println("Sending packet " + currentIndex + " of"
-							+ data.length);
-					if (networkLayer.Transmit(new Packet(readData)) == TransmissionResult.Failure) {
+					AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0, new byte[1024]);
+					if (networkLayer.Transmit(aws) == TransmissionResult.Failure) {
 						System.out.println("Failure to transmit");
 						// Mark current packet as not transmitted.
 					} else {
 						currentIndex++;
-						if (currentIndex > data.length) {
-							return true;
-						}
+//						if (currentIndex > data.length) {
+//							return true;
+//						}
 					}
 
 				}
@@ -154,7 +150,8 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			} else {
 				System.out.println("RECIEVED DATA");
 				byte[] data = receivedPacket.GetData();
-
+				AwesomePacket packet = new AwesomePacket(data);
+				System.out.println(packet.getKind()+" : "+packet.getArg() );
 				// If the data packet was empty, we are done
 				if (data.length == 0) {
 					try {
