@@ -52,7 +52,7 @@ public class AwesomePacket extends Packet {
 			if (c == ' ') {
 				break;
 			} else {
-				sKind += fullData[index];
+				sKind += c;
 			}	
 		}
 		kind = PacketKind.packetKindFromString(sKind);
@@ -64,7 +64,7 @@ public class AwesomePacket extends Packet {
 			if (c == ' ') {
 				break;
 			} else {
-				Sarg += fullData[index];
+				Sarg += c;
 			}	
 		}
 		arg = Integer.valueOf(Sarg);
