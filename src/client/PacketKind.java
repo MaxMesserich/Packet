@@ -4,10 +4,10 @@ public enum PacketKind {
 
 	START, DATA, STOP, ACK;
 	
-	public static final String STA = "start";
-	public static final String DAT = "packetnr";
-	public static final String STO = "stop";
-	public static final String AC = "ack";
+	public static final String STA = "sa";
+	public static final String DAT = "da";
+	public static final String STO = "so";
+	public static final String AC = "ac";
 	
 	public String toString() {
 		if (this.equals(START)) {

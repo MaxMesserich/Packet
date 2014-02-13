@@ -1,5 +1,6 @@
 package client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -83,12 +84,30 @@ public class AwesomePacket extends Packet {
 		}
 		return string;
 	}
-	public static AwesomePacket[] file2packets(int packetSize,byte[] file){
-		int fileSize = file.length;
-		int packetCount = (fileSize/packetSize) +1;
-		AwesomePacket[] a;
-		return null;
+	
+	public static AwesomePacket[] file2packets(int packetSize, byte[] file){
+		int index = 0;
+		ArrayList<AwesomePacket> packets = new ArrayList<AwesomePacket>();
+		while (index < file.length) {
+			int usedSpace = (PacketKind.DATA.toString() + " " + index + " ").getBytes().length;
+			byte[] currData = getData(file, index, packetSize - usedSpace);
+			if (currData != null) {
+				index += currData.length;		
+				packets.add(new AwesomePacket(PacketKind.DATA, index, currData));
+			} else {
+				break;
+			}
+		}
+		return (AwesomePacket[])packets.toArray(new AwesomePacket[packets.size()]);
 	}
+	
+	public static byte[] getData (byte[] file, int from, int length) {
+		if (file.length > from + length) {
+			return Arrays.copyOfRange(file, from, from + length);
+		} 
+		return null;		
+	}
+	
 	/**
 	 * Returns the kind of the packet.
 	 */
