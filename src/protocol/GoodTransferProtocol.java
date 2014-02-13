@@ -96,7 +96,10 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 						System.out.println("Failure to transmit");
 						// Mark current packet as not transmitted.
 					} else {
-
+						networkLayer.Transmit(new Packet(readData));
+						networkLayer.Transmit(new Packet(readData));
+						networkLayer.Transmit(new Packet(readData));
+						networkLayer.Transmit(new Packet(readData));
 						currentIndex++;
 						if (currentIndex > data.length) {
 							return true;
@@ -125,6 +128,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	 */
 	private boolean ReceiveData() {
 		Packet receivedPacket = networkLayer.Receive();
+		System.out.println("RECEIVING DATA");
 		if (receivedPacket != null) {
 			if (transferMode == TransferMode.Send) {
 				// Create a new String to read the message;
