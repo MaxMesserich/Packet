@@ -33,7 +33,7 @@ public class Program {
 	private static IDataTransferProtocol protocol = new GoodTransferProtocol();
 
 	// Whether this program should send or receive
-	private static TransferMode transferMode = TransferMode.Receive;
+	private static TransferMode transferMode = TransferMode.Send;
 
 	// Challenge server address
 	private static String serverAddress = "dacs-stud03.ewi.utwente.nl";
