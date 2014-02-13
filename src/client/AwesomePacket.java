@@ -50,6 +50,7 @@ public class AwesomePacket extends Packet {
 		for (int p = 0; index < fullData.length; index++) {
 			char c = (char) fullData[index];
 			if (c == ' ') {
+				index++;
 				break;
 			} else {
 				sKind += c;
@@ -62,6 +63,7 @@ public class AwesomePacket extends Packet {
 		for (int p = 0; index < fullData.length; index++) {
 			char c = (char) fullData[index];
 			if (c == ' ') {
+				index++;
 				break;
 			} else {
 				Sarg += c;
