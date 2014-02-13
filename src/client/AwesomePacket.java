@@ -99,13 +99,5 @@ public class AwesomePacket extends Packet {
 	public byte[] getDataBytes() {
 		return dataBytes;
 	}
-	
-	/**
-	 * Builds the packet from the arguments.
-	 */
-	public void buildPacket() {
-		super.(kind.toString() + " " + arg + " " + byteArrayToString(dataBytes)).getBytes();
-	}
-	
-	
+		
 }
