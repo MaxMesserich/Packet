@@ -163,7 +163,8 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
-
+					System.out.println("SENNDING ACK");
+					SendData();
 					// Signal that work is done
 					return true;
 				}else{
