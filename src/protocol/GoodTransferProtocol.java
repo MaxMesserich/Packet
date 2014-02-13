@@ -14,11 +14,13 @@ import client.PacketKind;
 
 public class GoodTransferProtocol implements IDataTransferProtocol {
 	private INetworkLayerAPI networkLayer;
-	private int bytesSent = 0;
+	private int currentIndex = 0;
 	private TransferMode transferMode;
 	FileInputStream inputStream;
 	FileOutputStream outputStream;
 	private boolean init, ackReceived;
+	AwesomePacket[] transmit;
+
 	public GoodTransferProtocol() {
 		System.out.println("DERP DERP");
 		init = true;
@@ -33,6 +35,10 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 		this.networkLayer = networkLayer;
 	}
 
+	private void initFile(FileInputStream input) {
+		// input.
+	}
+
 	@Override
 	public void Initialize(TransferMode transferMode) {
 		this.transferMode = transferMode;
@@ -44,6 +50,9 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 				// Open the input file
 				inputStream = new FileInputStream(Paths.get("")
 						.toAbsolutePath() + "/tobesent.dat");
+				byte[] file = new byte[21222];
+
+				transmit = AwesomePacket.file2packets(1024, file);
 			} catch (FileNotFoundException e) {
 				throw new IllegalStateException("File not found");
 			}
@@ -65,19 +74,21 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	public boolean Tick() {
 		if (this.transferMode == TransferMode.Send) {
 			// Send mode
-//			System.out.println("TICK SEND");
-			if(init||ackReceived){
+			// System.out.println("TICK SEND");
+
+			if (init || ackReceived) {
 				init = false;
 				return SendData();
 			}
 			ackReceived = ReceiveData();
-			
+			if (ackReceived) {
+				currentIndex++;
+			}
 			return ackReceived;
-			
-			
+
 		} else {
 			// Receive mode
-//			System.out.println("TICK RECEIVE");
+			// System.out.println("TICK RECEIVE");
 			return ReceiveData();
 		}
 	}
@@ -93,32 +104,19 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 			ackReceived = false;
 			// Max packet size is 1024
 			byte[] w = new byte[100];
-			
-			int currentIndex = 0;
 
-			try {
-				int fileSize = inputStream.read(w);
-				if (fileSize > 0) {
-					AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0,w);
-					Packet p = new Packet(w);
-					System.out.println(aws.getKind()+", "+aws.getArg());
-					if (networkLayer.Transmit(aws) == TransmissionResult.Failure) {
-						System.out.println("Failure to transmit");
-						// Mark current packet as not transmitted.
-					} else {
-						currentIndex++;
-//						if (currentIndex > data.length) {
-//							return true;
-//						}
-					}
-
+			if (currentIndex < transmit.length) {
+//				AwesomePacket aws = new AwesomePacket(PacketKind.DATA, 0, w);
+//				Packet p = new Packet(w);
+				System.out.println(transmit[currentIndex].getKind() + ", " +transmit[currentIndex].getArg());
+				if (networkLayer.Transmit(transmit[currentIndex]) == TransmissionResult.Failure) {
+					System.out.println("Failure to transmit");
+					return true;
+					// Mark current packet as not transmitted.
 				}
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				return false;
 			}
-			return false;
+
 		} else {
 			System.out.println("Sending ACK to Sender");
 			String ack = "ACK";
@@ -135,7 +133,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 	 */
 	private boolean ReceiveData() {
 		Packet receivedPacket = networkLayer.Receive();
-//		
+		//
 		if (receivedPacket != null) {
 			if (transferMode == TransferMode.Send) {
 				// Create a new String to read the message;
@@ -145,7 +143,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					message += (char) (packetBytes[i]);
 				}
 				if (message.equals("ACK")) {
-					
+
 					System.out.println("ACK RECEIVED FROM CLIENT");
 					ackReceived = true;
 				}
@@ -153,7 +151,7 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 				System.out.println("RECIEVED DATA");
 				byte[] data = receivedPacket.GetData();
 				AwesomePacket packet = new AwesomePacket(data);
-				System.out.println(packet.getKind()+" : "+packet.getArg() );
+				System.out.println(packet.getKind() + " : " + packet.getArg());
 				// If the data packet was empty, we are done
 				if (data.length == 0) {
 					try {
@@ -166,8 +164,8 @@ public class GoodTransferProtocol implements IDataTransferProtocol {
 					SendData();
 					// Signal that work is done
 					return true;
-				}else{
-					//Send ACK TO THE SERVER THAT A PACKET HAS BEEN RECEIVED
+				} else {
+					// Send ACK TO THE SERVER THAT A PACKET HAS BEEN RECEIVED
 					SendData();
 				}
 			}
